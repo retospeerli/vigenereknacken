@@ -116,6 +116,7 @@ th, td {
   border-bottom: 1px solid #444;
   padding: 8px;
   text-align: left;
+  vertical-align: top;
 }
 
 th {
@@ -150,6 +151,11 @@ th {
 .code {
   font-family: "Courier New", monospace;
   color: #ffe08a;
+}
+
+.small {
+  font-size: 0.9rem;
+  color: #ccc;
 }
 
 @media (max-width: 800px) {
