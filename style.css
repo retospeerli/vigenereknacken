@@ -1,0 +1,159 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: system-ui, Arial, sans-serif;
+  background: #171717;
+  color: #f4f4f4;
+}
+
+.app {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 24px;
+}
+
+header {
+  text-align: center;
+  margin-bottom: 24px;
+}
+
+h1 {
+  margin-bottom: 6px;
+  color: #ffe08a;
+}
+
+h2 {
+  margin-top: 0;
+  color: #9fe6ff;
+}
+
+.card {
+  background: #242424;
+  border: 1px solid #444;
+  border-radius: 18px;
+  padding: 20px;
+  margin-bottom: 18px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.25);
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px;
+}
+
+textarea {
+  width: 100%;
+  min-height: 160px;
+  resize: vertical;
+  border-radius: 12px;
+  border: 1px solid #555;
+  background: #111;
+  color: #f4f4f4;
+  padding: 14px;
+  font-size: 1rem;
+  line-height: 1.5;
+}
+
+#plainOutput {
+  min-height: 220px;
+}
+
+button {
+  border: 0;
+  border-radius: 12px;
+  padding: 11px 16px;
+  background: #ffe08a;
+  color: #111;
+  font-weight: 700;
+  cursor: pointer;
+  margin: 6px 6px 6px 0;
+}
+
+button:hover {
+  filter: brightness(1.1);
+}
+
+.buttons {
+  margin-top: 10px;
+}
+
+input {
+  border-radius: 10px;
+  border: 1px solid #555;
+  background: #111;
+  color: white;
+  padding: 10px;
+  font-size: 1rem;
+  margin: 6px;
+}
+
+.output {
+  background: #111;
+  border-radius: 12px;
+  padding: 14px;
+  min-height: 80px;
+  overflow-x: auto;
+  line-height: 1.5;
+}
+
+.output.big {
+  font-size: 1.5rem;
+  color: #ffe08a;
+  font-weight: 700;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 12px;
+}
+
+th, td {
+  border-bottom: 1px solid #444;
+  padding: 8px;
+  text-align: left;
+}
+
+th {
+  color: #ffe08a;
+}
+
+.good {
+  color: #8aff9f;
+  font-weight: 700;
+}
+
+.warn {
+  color: #ffbd80;
+}
+
+.bad {
+  color: #ff8a8a;
+}
+
+.keyBox {
+  margin-bottom: 12px;
+}
+
+.bar {
+  display: inline-block;
+  height: 12px;
+  background: #9fe6ff;
+  border-radius: 10px;
+  margin-right: 8px;
+}
+
+.code {
+  font-family: "Courier New", monospace;
+  color: #ffe08a;
+}
+
+@media (max-width: 800px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
+}
