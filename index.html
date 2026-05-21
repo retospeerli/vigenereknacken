@@ -10,12 +10,13 @@
   <main class="app">
     <header>
       <h1>Vigenère-Verschlüsselung knacken</h1>
-      <p>Kasiski-Test · Schlüssellänge finden · Häufigkeitsanalyse</p>
+      <p>Kasiski-Test · Schlüssellänge finden · Schlüssel rekonstruieren</p>
     </header>
 
     <section class="card">
       <h2>1. Geheimtext eingeben</h2>
       <textarea id="cipherInput" placeholder="Füge hier den verschlüsselten Text ein..."></textarea>
+
       <div class="buttons">
         <button id="exampleBtn">Beispiel laden</button>
         <button id="analyzeBtn">Analyse starten</button>
@@ -24,47 +25,53 @@
     </section>
 
     <section class="card">
-      <h2>2. Erklärung des Vorgehens</h2>
+      <h2>2. So funktioniert das Knacken</h2>
       <ol>
-        <li>Der Text wird bereinigt: Nur Buchstaben A–Z bleiben übrig.</li>
-        <li>Der Kasiski-Test sucht wiederholte Buchstabengruppen.</li>
-        <li>Die Abstände zwischen Wiederholungen werden berechnet.</li>
-        <li>Häufige Teiler dieser Abstände deuten auf die Schlüssellänge hin.</li>
-        <li>Danach wird jede Spalte wie eine Caesar-Verschlüsselung analysiert.</li>
+        <li>Beim Vigenère-Verfahren bestimmt jeder Buchstabe des Schlüsselwortes eine eigene Verschiebung.</li>
+        <li>Der Kasiski-Test sucht wiederholte Buchstabengruppen im Geheimtext.</li>
+        <li>Die Abstände zwischen diesen Wiederholungen werden gemessen.</li>
+        <li>Häufige Teiler dieser Abstände können auf die Länge des Schlüsselwortes hinweisen.</li>
+        <li>Wenn die Schlüssellänge bekannt ist, wird der Text in Gruppen aufgeteilt.</li>
+        <li>Jede Gruppe wird untersucht, um den passenden Schlüsselbuchstaben zu finden.</li>
       </ol>
     </section>
 
     <section class="grid">
       <div class="card">
-        <h2>3. Kasiski-Ergebnis</h2>
+        <h2>3. Kasiski-Test</h2>
         <div id="kasiskiOutput" class="output"></div>
       </div>
 
       <div class="card">
         <h2>4. Vermutete Schlüssellänge</h2>
         <div id="lengthOutput" class="output big"></div>
+
         <label>
           Eigene Schlüssellänge testen:
-          <input id="manualLength" type="number" min="1" max="30" value="5" />
+          <input id="manualLength" type="number" min="1" max="30" value="6" />
         </label>
+
         <button id="useManualBtn">Diese Länge analysieren</button>
       </div>
     </section>
 
     <section class="card">
-      <h2>5. Häufigkeitsanalyse pro Schlüsselstelle</h2>
+      <h2>5. Analyse der Schlüsselgruppen</h2>
       <div id="frequencyOutput" class="output"></div>
     </section>
 
     <section class="card">
       <h2>6. Vermuteter Schlüssel und Entschlüsselung</h2>
+
       <div class="keyBox">
         <label>
           Vermuteter Schlüssel:
           <input id="keyInput" type="text" />
         </label>
+
         <button id="decryptBtn">Mit Schlüssel entschlüsseln</button>
       </div>
+
       <textarea id="plainOutput" readonly placeholder="Hier erscheint der entschlüsselte Text..."></textarea>
     </section>
   </main>
