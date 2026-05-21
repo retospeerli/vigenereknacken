@@ -1,5 +1,4 @@
 const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-const germanFreqOrder = "ENISRATDHULCGMOBWFKZPVJYXQ";
 
 const cipherInput = document.getElementById("cipherInput");
 const kasiskiOutput = document.getElementById("kasiskiOutput");
@@ -25,9 +24,36 @@ function cleanText(text) {
 }
 
 function loadExample() {
-  cipherInput.value =
-    "KMKXG QVPVL TQXQH KZZEO HKKSH QVPKF SSKIX QVJMP KXGKS " +
-    "JWZVR QVVLX GWVVO JEPVW XGQII EIPKW GSSZH KZZEO HKKSH";
+  const plainText = `
+  NAPOLEON BONAPARTE WAR EIN BERUEHMTER FRANZOESISCHER HERRSCHER.
+  ER WURDE AUF DER INSEL KORSIKA GEBOREN.
+  ALS JUNGER MANN GING ER ZUM MILITAER UND WURDE EIN SEHR ERFOLGREICHER GENERAL.
+  SPAETER KRONTE ER SICH SELBST ZUM KAISER VON FRANKREICH.
+  NAPOLEON GEWANN VIELE SCHLACHTEN UND EROBERTE GROSSE TEILE EUROPAS.
+  SEINE SOLDATEN MUSSTEN OFT WEITE STRECKEN ZU FUSS MARSCHIEREN.
+  VIELE MENSCHEN HATTEN ANGST VOR IHM.
+  AM ENDE VERLOR NAPOLEON ABER DIE WICHTIGE SCHLACHT BEI WATERLOO.
+  DANACH WURDE ER AUF EINE INSEL VERBANNT.
+  HEUTE ERINNERN SICH NOCH VIELE BUECHER UND FILME AN NAPOLEON BONAPARTE.
+  `;
+
+  const key = "BANANE";
+  const encrypted = vigenereEncrypt(plainText, key);
+
+  cipherInput.value = encrypted;
+  keyInput.value = "";
+  plainOutput.value = "";
+
+  kasiskiOutput.innerHTML = `
+    <p>
+      Beispieltext geladen.<br>
+      Thema: <strong>Napoleon Bonaparte</strong><br>
+      Der Text wurde mit einem absichtlich schlechten Schlüsselwort verschlüsselt.
+    </p>
+  `;
+
+  lengthOutput.innerHTML = "";
+  frequencyOutput.innerHTML = "";
 }
 
 function clearAll() {
@@ -42,8 +68,12 @@ function clearAll() {
 function analyze() {
   const text = cleanText(cipherInput.value);
 
-  if (text.length < 40) {
-    kasiskiOutput.innerHTML = `<span class="bad">Der Text ist sehr kurz. Der Kasiski-Test funktioniert besser mit längeren Geheimtexten.</span>`;
+  if (text.length < 80) {
+    kasiskiOutput.innerHTML = `
+      <span class="bad">
+        Der Text ist zu kurz. Der Kasiski-Test funktioniert besser mit längeren Geheimtexten.
+      </span>
+    `;
     return;
   }
 
@@ -54,7 +84,7 @@ function analyze() {
   showKasiski(repeats, factors);
   showLength(bestLength);
 
-  manualLength.value = bestLength || 5;
+  manualLength.value = bestLength || 6;
 
   if (bestLength) {
     analyzeColumns(text, bestLength);
@@ -69,7 +99,11 @@ function findRepeats(text) {
 
     for (let i = 0; i <= text.length - size; i++) {
       const part = text.slice(i, i + size);
-      if (!map[part]) map[part] = [];
+
+      if (!map[part]) {
+        map[part] = [];
+      }
+
       map[part].push(i);
     }
 
@@ -112,7 +146,10 @@ function countFactors(repeats) {
 
 function guessKeyLength(factors) {
   const entries = Object.entries(factors)
-    .map(([factor, count]) => ({ factor: Number(factor), count }))
+    .map(([factor, count]) => ({
+      factor: Number(factor),
+      count
+    }))
     .sort((a, b) => b.count - a.count);
 
   return entries.length ? entries[0].factor : null;
@@ -122,22 +159,26 @@ function showKasiski(repeats, factors) {
   if (repeats.length === 0) {
     kasiskiOutput.innerHTML = `
       <p class="bad">Keine brauchbaren Wiederholungen gefunden.</p>
-      <p>Der Text ist vielleicht zu kurz oder der Schlüssel ist lang.</p>
+      <p>Der Text ist vielleicht zu kurz oder das Schlüsselwort ist zu lang.</p>
     `;
     return;
   }
 
   let html = `
-    <p>Gefundene wiederholte Buchstabengruppen:</p>
+    <p>
+      Der Kasiski-Test sucht gleiche Buchstabengruppen im Geheimtext.
+      Wenn dieselbe Gruppe mehrfach vorkommt, können die Abstände Hinweise auf die Länge des Schlüsselwortes geben.
+    </p>
+
     <table>
       <tr>
-        <th>Gruppe</th>
+        <th>Wiederholung</th>
         <th>Positionen</th>
         <th>Abstände</th>
       </tr>
   `;
 
-  repeats.slice(0, 25).forEach(rep => {
+  repeats.slice(0, 30).forEach(rep => {
     html += `
       <tr>
         <td class="code">${rep.part}</td>
@@ -149,18 +190,34 @@ function showKasiski(repeats, factors) {
 
   html += `</table>`;
 
-  html += `<p>Häufige Teiler der Abstände:</p>`;
-  html += `<table><tr><th>Teiler</th><th>Treffer</th><th>Anzeige</th></tr>`;
+  html += `
+    <p>
+      Nun werden die Abstände untersucht. 
+      Häufige Teiler sind verdächtig, weil das Schlüsselwort immer wieder von vorne beginnt.
+    </p>
+
+    <table>
+      <tr>
+        <th>Mögliche Schlüssellänge</th>
+        <th>Treffer</th>
+        <th>Grafik</th>
+      </tr>
+  `;
 
   Object.entries(factors)
-    .map(([factor, count]) => ({ factor: Number(factor), count }))
+    .map(([factor, count]) => ({
+      factor: Number(factor),
+      count
+    }))
     .sort((a, b) => b.count - a.count)
     .forEach(item => {
       html += `
         <tr>
           <td>${item.factor}</td>
           <td>${item.count}</td>
-          <td><span class="bar" style="width:${item.count * 18}px"></span></td>
+          <td>
+            <span class="bar" style="width:${item.count * 18}px"></span>
+          </td>
         </tr>
       `;
     });
@@ -172,13 +229,17 @@ function showKasiski(repeats, factors) {
 
 function showLength(length) {
   if (!length) {
-    lengthOutput.innerHTML = `<span class="bad">Keine sichere Schätzung möglich.</span>`;
+    lengthOutput.innerHTML = `
+      <span class="bad">Keine sichere Schätzung möglich.</span>
+    `;
     return;
   }
 
   lengthOutput.innerHTML = `
     Vermutlich: <span class="good">${length}</span><br>
-    <small>Das ist keine Garantie, aber ein guter Startwert.</small>
+    <span class="small">
+      Diese Zahl ist die vermutete Länge des Schlüsselwortes.
+    </span>
   `;
 }
 
@@ -186,18 +247,31 @@ function analyzeManualLength() {
   const text = cleanText(cipherInput.value);
   const length = Number(manualLength.value);
 
-  if (!text || length < 1) return;
+  if (!text || length < 1) {
+    return;
+  }
 
   analyzeColumns(text, length);
 }
 
 function analyzeColumns(text, keyLength) {
   let guessedKey = "";
+
   let html = `
-    <p>Der Geheimtext wird in ${keyLength} Spalten aufgeteilt. Jede Spalte wurde wahrscheinlich mit demselben Caesar-Buchstaben verschoben.</p>
+    <p>
+      Der Geheimtext wird nun in <strong>${keyLength}</strong> Gruppen aufgeteilt.
+      Diese Zahl entspricht der vermuteten Länge des Schlüsselwortes.
+    </p>
+
+    <p>
+      Alle Buchstaben einer Gruppe wurden mit derselben Verschiebung verschlüsselt,
+      weil an diesen Stellen immer derselbe Schlüsselbuchstabe verwendet wurde.
+      Deshalb kann man für jede Gruppe einzeln den wahrscheinlichsten Schlüsselbuchstaben suchen.
+    </p>
+
     <table>
       <tr>
-        <th>Schlüsselstelle</th>
+        <th>Gruppe</th>
         <th>Häufigster Buchstabe</th>
         <th>Vermutete Verschiebung</th>
         <th>Vermuteter Schlüsselbuchstabe</th>
@@ -231,8 +305,9 @@ function analyzeColumns(text, keyLength) {
 
   html += `
     <p class="warn">
-      Vereinfachte Annahme: Der häufigste Buchstabe einer Spalte entspricht ungefähr dem E.
-      Bei deutschen Texten ist das oft hilfreich, aber nicht immer perfekt.
+      Hinweis: Diese App nimmt vereinfacht an, dass der häufigste Buchstabe einer Gruppe wahrscheinlich für E steht.
+      Das ist bei deutschen Texten oft hilfreich, aber nicht immer perfekt.
+      Darum darf der Schlüssel danach von Hand verbessert werden.
     </p>
   `;
 
@@ -264,6 +339,7 @@ function getMostCommonLetter(text) {
 function guessShiftByE(letter) {
   const cipherIndex = alphabet.indexOf(letter);
   const plainIndex = alphabet.indexOf("E");
+
   return (cipherIndex - plainIndex + 26) % 26;
 }
 
@@ -271,7 +347,9 @@ function decryptWithKey() {
   const original = cipherInput.value;
   const key = cleanText(keyInput.value);
 
-  if (!key) return;
+  if (!key) {
+    return;
+  }
 
   let result = "";
   let keyPos = 0;
@@ -292,4 +370,28 @@ function decryptWithKey() {
   }
 
   plainOutput.value = result;
+}
+
+function vigenereEncrypt(text, key) {
+  key = cleanText(key);
+
+  let result = "";
+  let keyPos = 0;
+
+  for (const char of text) {
+    const upper = char.toUpperCase();
+
+    if (alphabet.includes(upper)) {
+      const p = alphabet.indexOf(upper);
+      const k = alphabet.indexOf(key[keyPos % key.length]);
+      const c = (p + k) % 26;
+
+      result += alphabet[c];
+      keyPos++;
+    } else {
+      result += char;
+    }
+  }
+
+  return result;
 }
